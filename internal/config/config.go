@@ -1,6 +1,7 @@
 package config
 
 import (
+	"path/filepath"
 	"encoding/json"
 	"os"
 )
@@ -18,27 +19,50 @@ func (cfg *Config) SetUser(userName string) error {
 }
 
 func Read() (Config, error) {
-	data, err := os.ReadFile(configFileName)
+	fullPath, err := getConfigFilePath()
 	if err != nil {
 		return Config{}, err
 	}
 
-	var config Config 
-	err = json.Unmarshal(data, &config)
+	file, err := os.Open(fullPath)
+	if err != nil {
+		return Config{}, err
+	}
+	defer file.Close()
+
+	decoder := json.NewDecoder(file)
+	cfg := Config{}
+	err = decoder.Decode(&cfg)
 	if err != nil {
 		return Config{}, err
 	}
 
-	return config, nil
+	return cfg, nil
+}
+
+func getConfigFilePath() (string, error) {
+	home, err := os.UserHomeDir()
+	if err != nil {
+		return "", err
+	}
+	fullPath := filepath.Join(home, configFileName)
+	return fullPath, nil
 }
 
 func write(cfg Config) error {
-	data, err := json.Marshal(cfg)
+	fullPath, err := getConfigFilePath()
 	if err != nil {
 		return err
 	}
 
-	err = os.WriteFile(configFileName, data, 0644)
+	file, err := os.Create(fullPath)
+	if err != nil {
+		return err
+	}
+	defer file.Close()
+
+	encoder := json.NewEncoder(file)
+	err = encoder.Encode(cfg)
 	if err != nil {
 		return err
 	}

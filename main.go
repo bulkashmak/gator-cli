@@ -1,10 +1,13 @@
 package main
 
 import (
-	"fmt"
 	"log"
+	"os"
 
+	"github.com/bulkashmak/gator-cli/internal"
+	"github.com/bulkashmak/gator-cli/internal/commands"
 	"github.com/bulkashmak/gator-cli/internal/config"
+	"github.com/bulkashmak/gator-cli/internal/handlers"
 )
 
 func main() {
@@ -12,17 +15,25 @@ func main() {
 	if err != nil {
 		log.Fatalf("failed to read config: %v", err)
 	}
-	fmt.Printf("Read config: %+v\n", cfg)
 
-	err = cfg.SetUser("bulkashmak")
-	if err != nil {
-		log.Fatalf("couldn't set current user: %v", err)
+	appState := &internal.State{
+		Cfg: &cfg,
 	}
 
-	cfg, err = config.Read()
-	if err != nil {
-		log.Fatalf("failed to read config: %v", err)
+	cmds := commands.Commands{
+		Store: make(map[string]func(*internal.State, commands.Command) error),
+	}
+  cmds.Register("login", handlers.HandleLogin)
+
+  if len(os.Args) < 2 {
+		log.Fatal("Usage: cli <command> [args...]")
 	}
 
-	fmt.Printf("Read config again: %+v\n", cfg)
+	cmdName := os.Args[1]
+	cmdArgs := os.Args[2:]
+
+	err = cmds.Run(appState, commands.Command{Name: cmdName, Args: cmdArgs})
+	if err != nil {
+		log.Fatal(err)
+	}
 }
