@@ -1,12 +1,14 @@
 package main
 
 import (
+	"database/sql"
 	"log"
 	"os"
 
 	"github.com/bulkashmak/gator-cli/internal"
 	"github.com/bulkashmak/gator-cli/internal/commands"
 	"github.com/bulkashmak/gator-cli/internal/config"
+	"github.com/bulkashmak/gator-cli/internal/database"
 	"github.com/bulkashmak/gator-cli/internal/handlers"
 )
 
@@ -16,8 +18,15 @@ func main() {
 		log.Fatalf("failed to read config: %v", err)
 	}
 
+	db, err := sql.Open("postgres", cfg.DBURL)
+	if err != nil {
+		log.Fatalf("failed to open db connection: %v", err)
+	}
+  dbQueries := database.New(db)
+
 	appState := &internal.State{
 		Cfg: &cfg,
+		DB:  dbQueries,
 	}
 
 	cmds := commands.Commands{
