@@ -2,6 +2,7 @@ package main
 
 import (
 	"database/sql"
+	_ "github.com/lib/pq"
 	"log"
 	"os"
 
@@ -22,7 +23,7 @@ func main() {
 	if err != nil {
 		log.Fatalf("failed to open db connection: %v", err)
 	}
-  dbQueries := database.New(db)
+	dbQueries := database.New(db)
 
 	appState := &internal.State{
 		Cfg: &cfg,
@@ -32,9 +33,9 @@ func main() {
 	cmds := commands.Commands{
 		Store: make(map[string]func(*internal.State, commands.Command) error),
 	}
-  cmds.Register("login", handlers.HandleLogin)
+	cmds.Register("login", handlers.HandleLogin)
 
-  if len(os.Args) < 2 {
+	if len(os.Args) < 2 {
 		log.Fatal("Usage: cli <command> [args...]")
 	}
 
