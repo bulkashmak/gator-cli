@@ -34,6 +34,7 @@ func main() {
 		Store: make(map[string]func(*internal.State, commands.Command) error),
 	}
 	cmds.Register("login", handlers.HandleLogin)
+	cmds.Register("register", handlers.HandleRegister)
 
 	if len(os.Args) < 2 {
 		log.Fatal("Usage: cli <command> [args...]")
