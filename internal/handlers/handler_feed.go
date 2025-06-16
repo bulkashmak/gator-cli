@@ -9,26 +9,8 @@ import (
 	"github.com/bulkashmak/gator-cli/internal"
 	"github.com/bulkashmak/gator-cli/internal/commands"
 	"github.com/bulkashmak/gator-cli/internal/database"
-	"github.com/bulkashmak/gator-cli/internal/rss"
 	"github.com/google/uuid"
 )
-
-func HandleAggregate(s *internal.State, cmd commands.Command) error {
-	if len(cmd.Args) > 0 {
-		return errors.New("command arguments are not allowed")
-	}
-
-	url := "https://www.wagslane.dev/index.xml"
-
-	feed, err := rss.FetchFeed(context.Background(), url)
-	if err != nil {
-		return fmt.Errorf("failed to fetch feed: %w", err)
-	}
-
-	fmt.Printf("%v+\n", feed)
-
-	return nil
-}
 
 func HandleAddFeed(s *internal.State, cmd commands.Command) error {
 	if len(cmd.Args) != 2 {
@@ -64,6 +46,22 @@ func HandleAddFeed(s *internal.State, cmd commands.Command) error {
 	return nil
 }
 
+func HandleFeeds(s *internal.State, cmd commands.Command) error {
+	if len(cmd.Args) != 0 {
+		return errors.New("command arguments are not allowed")
+	}
+
+	feeds, err := s.DB.ListFeedsWithUserNames(context.Background())
+	if err != nil {
+		return fmt.Errorf("failed to get feeds from db: %w", err)
+	}
+
+	for _, feed := range feeds {
+    fmt.Printf("%s | %s | %s", feed.Name, feed.Url, feed.UserName)
+	}
+	
+	return nil
+}
 
 func printFeed(feed database.Feed) {
 	fmt.Printf("* ID:            %s\n", feed.ID)

@@ -1,3 +1,8 @@
+-- name: ListFeedsWithUserNames :many
+SELECT f.*, u.name AS user_name
+FROM feeds f
+JOIN users u ON f.user_id = u.id;
+
 -- name: CreateFeed :one
 INSERT INTO feeds (id, created_at, updated_at, name, url, user_id)
 VALUES (
@@ -9,3 +14,4 @@ VALUES (
     $6
 )
 RETURNING *;
+
