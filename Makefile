@@ -5,7 +5,7 @@ MIGRATIONS_DIR = sql/schema
 # Target
 .PHONY: migrate
 
-# Run all Up migrations using Goose
+# Run all Goose UP migrations
 migrate:
 	goose -dir ${MIGRATIONS_DIR} postgres "${DB_URL}" up
 
