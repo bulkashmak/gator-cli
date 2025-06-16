@@ -43,6 +43,14 @@ func HandleAddFeed(s *internal.State, cmd commands.Command) error {
 	fmt.Println()
 	fmt.Println("=====================================")
 
+	s.DB.CreateFeedFollower(context.Background(), database.CreateFeedFollowerParams{
+		ID:        uuid.New(),
+		CreatedAt: time.Now(),
+		UpdatedAt: time.Now(),
+		UserID:    user.ID,
+		FeedID:    feed.ID,
+	})
+
 	return nil
 }
 
