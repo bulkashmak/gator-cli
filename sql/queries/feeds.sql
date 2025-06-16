@@ -1,3 +1,8 @@
+-- name: GetFeedByUrl :one
+SELECT *
+FROM feeds
+WHERE feeds.url = $1;
+
 -- name: ListFeedsWithUserNames :many
 SELECT f.*, u.name AS user_name
 FROM feeds f

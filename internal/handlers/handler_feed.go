@@ -57,7 +57,7 @@ func HandleFeeds(s *internal.State, cmd commands.Command) error {
 	}
 
 	for _, feed := range feeds {
-    fmt.Printf("%s | %s | %s", feed.Name, feed.Url, feed.UserName)
+    fmt.Printf("%s | %s | %s\n", feed.Name, feed.Url, feed.UserName)
 	}
 	
 	return nil
