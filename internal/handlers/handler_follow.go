@@ -11,18 +11,13 @@ import (
 	"github.com/google/uuid"
 )
 
-func HandleFollow(s *internal.State, cmd commands.Command) error {
+func HandleFollow(s *internal.State, cmd commands.Command, user database.User) error {
 	if len(cmd.Args) != 1 {
 		return fmt.Errorf("usage: %s <url>", cmd.Name)
 	}
 
 	url := cmd.Args[0]
-	currUserName := s.Cfg.CurrUserName
 
-	currUser, err := s.DB.GetUser(context.Background(), currUserName)
-	if err != nil {
-		return fmt.Errorf("failed to get user: %w", err)
-	}
 	feed, err := s.DB.GetFeedByUrl(context.Background(), url)
 	if err != nil {
 		return fmt.Errorf("failed to get feed: %w", err)
@@ -32,7 +27,7 @@ func HandleFollow(s *internal.State, cmd commands.Command) error {
 		ID:        uuid.New(),
 		CreatedAt: time.Now(),
 		UpdatedAt: time.Now(),
-		UserID:    currUser.ID,
+		UserID:    user.ID,
 		FeedID:    feed.ID,
 	})
 	if err != nil {
