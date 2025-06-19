@@ -7,14 +7,23 @@ A simple RSS feed aggreGATOR in Go
 - Go 1.24.3
 - Postgres Latest
 
-- sqlc
-- goose
+## Installation
 
-## Usage
+`go install github.com/bulkashmak/gator-cli`
 
-Use the 'help' command to see the usage
+## Setup
 
-## Build
+1. Create a `.gatorconfig` config file in your `home/` directory. Here's an example:
+```json
+{
+  "db_url":"postgres://gator:gator@localhost:5432/gator?sslmode=disable",
+  "current_user_name":"bulat"
+}
+```
+2. Run Postgres locally. For docker check out `compose.yaml` file
+3. Run DB migrations with `make migrate`
 
-For DB migrations use `make migrate`
+## Run
+
+`gator-cli <command_name>`
 
