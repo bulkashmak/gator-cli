@@ -13,7 +13,7 @@ A simple RSS feed aggreGATOR in Go
 
 ## Setup
 
-1. Create a `.gatorconfig` config file in your `home/` directory. Here's an example:
+1. Create a `.gatorconfig` config file in your `~` directory. Here's an example:
 ```json
 {
   "db_url":"postgres://gator:gator@localhost:5432/gator?sslmode=disable",
@@ -26,4 +26,8 @@ A simple RSS feed aggreGATOR in Go
 ## Run
 
 `gator-cli <command_name>`
+
+### Commands
+
+You can check out the available commands in `main.go` file
 
