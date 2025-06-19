@@ -2,14 +2,17 @@ package handlers
 
 import (
 	"context"
+	"database/sql"
 	"fmt"
 	"log"
+	"strings"
 	"time"
 
 	"github.com/bulkashmak/gator-cli/internal"
 	"github.com/bulkashmak/gator-cli/internal/commands"
 	"github.com/bulkashmak/gator-cli/internal/database"
 	"github.com/bulkashmak/gator-cli/internal/rss"
+	"github.com/google/uuid"
 )
 
 func HandleAggregate(s *internal.State, cmd commands.Command) error {
@@ -55,7 +58,36 @@ func scrapeFeed(db *database.Queries, feed database.Feed) {
 	}
 
 	for _, item := range feedData.Channel.Items {
-	  fmt.Printf("Found post: %s\n", item.Title)	
+	  log.Printf("Found post: %s", item.Title)
+
+		publishedAt := sql.NullTime{}
+		if t, err := time.Parse(time.RFC1123Z, item.PubDate); err == nil {
+			publishedAt = sql.NullTime{
+				Time:  t,
+				Valid: true,
+			}
+		}
+
+		_, err = db.CreatePost(context.TODO(), database.CreatePostParams{
+			ID:          uuid.New(),
+			CreatedAt:   time.Now().UTC(),
+			UpdatedAt:   time.Now().UTC(),
+			Title:       item.Title,
+			Url:         item.Link,
+			Description: sql.NullString{
+				String: item.Description,
+			  Valid:  true,
+			},
+			PublishedAt: publishedAt,
+			FeedID:      feed.ID,
+		})
+		if err != nil {
+			if strings.Contains(err.Error(), "duplicate key value violates unique constraint") {
+				continue
+			}
+			log.Printf("failed to create post: %v", err)
+			continue
+		}
 	}
 	log.Printf("Feed %s collected, %d posts found", feed.Name, len(feedData.Channel.Items))
 }
