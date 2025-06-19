@@ -17,7 +17,7 @@ A simple RSS feed aggreGATOR in Go
 ```json
 {
   "db_url":"postgres://gator:gator@localhost:5432/gator?sslmode=disable",
-  "current_user_name":"bulat"
+  "current_user_name":""
 }
 ```
 2. Run Postgres locally. For docker check out `compose.yaml` file
